@@ -1,9 +1,10 @@
 <?php
+require_once __DIR__ . '/../../../include/config.php';
 session_start();
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
 
 <head>
     <meta charset="UTF-8">
@@ -11,13 +12,11 @@ session_start();
     <meta name="mobile-web-app-capable" content="yes">
     
 
-    <link href="/src/styles/styles.css" rel="stylesheet">
-    <link href="/src/styles/timeline.css" rel="stylesheet">
-    <link href="/src/styles/menus.css" rel="stylesheet">
-    <link href="/src/styles/responsive.css" rel="stylesheet">
-    <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="/src/scripts/general.js"></script>
+    <link href="/src/styles/styles.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+    <link href="/src/styles/timeline.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+    <link href="/src/styles/menus.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+    <link href="/src/styles/responsive.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+    <script src="/src/scripts/general.js?v=<?php echo PEEP_ASSET_VERSION; ?>"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -30,7 +29,7 @@ session_start();
     <header>
         <div id="desktopMenu">
             <nav>
-                <img src="/src/images/icons/chirp.svg" alt="Chirp" onclick="playChirpSound()">
+                <button type="button" class="logoButton" onclick="playChirpSound()" aria-label="Play the peep sound"><img src="/src/images/icons/chirp.svg" alt=""></button>
                 <a href="/"><img src="/src/images/icons/house.svg" alt=""> Home</a>
                 <a href="/discover"><img src="/src/images/icons/search.svg" alt=""> Discover</a>
                 <?php if (isset($_SESSION['username'])): ?>
@@ -44,7 +43,7 @@ session_start();
                 <?php endif; ?>
             </nav>
             <div id="menuSettings">
-                <?php if (isset($_SESSION['username']) && $_SESSION['username'] == 'chirp'): ?>
+                <?php if (peep_is_admin()): ?>
                 <a href="/admin">🛡️ Admin panel</a>
                 <?php endif; ?>
                 <a href="/settings/account">⚙️ Settings</a>
@@ -75,49 +74,14 @@ session_start();
     </header>
     <main>
         <div id="feed">
-            <div id="iconChirp" onclick="playChirpSound()">
-                <img src="/src/images/icons/chirp.svg" alt="Chirp">
-            </div>
+            <button type="button" id="iconChirp" onclick="playChirpSound()" aria-label="Play the peep sound"><img src="/src/images/icons/chirp.svg" alt=""></button>
             <div class="title">
-                <p class="selected">Forgot password</p>
+                <h1 class="selected">Forgot password</h1>
             </div>
-            <div id="signUp">
-                <p>Forgot your password? We'll get you back on Chirp!</p>
-                <form id="signupForm" method="post" action="/signin/forgot/password/performReset.php">
-                    <div id="inviteCode">
-                        <p class="subText">We'll get your right back. First of all, let us know what account this is for.</p>
-                        <div id="inputSignup">
-                            <input type="text" id="user" name="usernameResetPassword" placeholder="Username" required>
-                            <button type="button" class="followButton"
-                                onclick="showNextSection('nameUser')">Next</button>
-                        </div>
-                    </div>
-                    <div id="nameUser">
-                        <p class="subText">Are you really you?<br>Please provide the invite code you used to create your account.</p>
-                        <div id="inputSignup">
-                        <input type="text" id="code" name="inviteResetPassword" placeholder="Invite code" required>
-                            <button type="button" class="followButton"
-                                onclick="showNextSection('pwordUser')">Next</button>
-                        </div>
-                    </div>
-                    <div id="pwordUser">
-                        <p class="subText">Okay, let's set your new password! You might be logged out from other sessions after it.</p>
-                        </p>
-                        <div id="inputSignup">
-                            <div id="inputName">
-                                <input type="password" id="pword" name="pword" placeholder="Password" required>
-                                <input type="password" id="pwordConfirm" name="pwordConfirm"
-                                    placeholder="Confirm password" required>
-                            </div>
-                            <button type="submit" class="followButton">Complete</button>
-                        </div>
-                    </div>
-                </form>
-                <div id="errors">
-                    <p id="invalidCodeError">Invalid or incorrect invite code</p>
-                    <p id="usernameTakenError">User not found</p>
-                    <p id="passwordMismatchError">Passwords do not match</p>
-                </div>
+            <div id="signUp" class="peepPanel">
+                <p>Forgot your password?</p>
+                <p class="subText">For safety, passwords here can't be reset from this page. Ask the person who runs this site (an admin) and they can give you a temporary password from the admin panel. Then sign in and change it in Settings, Security and login.</p>
+                <p><a class="followButton" href="/signin/">Back to sign in</a></p>
             </div>
         </div>
     </main>
@@ -136,62 +100,9 @@ session_start();
         </div>
     </footer>
     <?php include '../../include/compose.php'; ?>
-    <script>
-    function showNextSection(nextSectionId) {
-        const sections = ['inviteCode', 'nameUser', 'pwordUser'];
-
-        // Hide all sections first
-        sections.forEach(sectionId => {
-            document.getElementById(sectionId).style.display = 'none';
-        });
-
-        // Display the next section based on nextSectionId
-        if (nextSectionId) {
-            document.getElementById(nextSectionId).style.display = 'block';
-        }
-    }
-    document.getElementById('signupForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const form = this;
-        const formData = new FormData(form);
-
-        fetch(form.action, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    // Display error message
-                    document.getElementById('errors').style.display = 'block';
-                    document.getElementById('invalidCodeError').style.display = 'none';
-                    document.getElementById('usernameTakenError').style.display = 'none';
-                    document.getElementById('passwordMismatchError').style.display = 'none';
-                    document.getElementById('invalidUsernameError').style.display = 'none';
-                    document.getElementById('reservedUsernameError').style.display = 'none';
-                    document.getElementById('inviteNotReservedError').style.display = 'none';
-
-                    if (data.error === 'Invalid invite code') {
-                        document.getElementById('invalidCodeError').style.display = 'block';
-                    } else if (data.error === 'Username already in use') {
-                        document.getElementById('usernameTakenError').style.display = 'block';
-                    } else if (data.error === 'Passwords do not match') {
-                        document.getElementById('passwordMismatchError').style.display = 'block';
-                    } else if (data.error === 'Invalid username. Only letters and numbers are allowed.') {
-                        document.getElementById('invalidUsernameError').style.display = 'block';
-                    } else if (data.error === 'This username is reserved.') {
-                        document.getElementById('reservedUsernameError').style.display = 'block';
-                    } else if (data.error === 'Invite not reserved for this username') {
-                        document.getElementById('inviteNotReservedError').style.display = 'block';
-                    }
-                } else if (data.success) {
-                    // Handle success scenario, maybe redirect to a success page
-                    window.location.href = '/signin/'; // Example redirect
-                }
-            })
-            .catch(error => console.error('Error:', error));
-    });
-    </script>
+    
+<div id="peepStatus" class="srOnly" role="status" aria-live="polite" data-flash="<?php echo peep_take_flash(); ?>"></div>
+    <script src="/src/scripts/peep.js?v=<?php echo PEEP_ASSET_VERSION; ?>"></script>
 </body>
 
 </html>
