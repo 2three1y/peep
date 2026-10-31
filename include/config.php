@@ -15,7 +15,7 @@ ini_set('log_errors', '1');
 
 define('PEEP_NAME', getenv('PEEP_NAME') ?: 'peep');          // shown in titles, menus, headings
 define('PEEP_POST_WORD', getenv('PEEP_POST_WORD') ?: 'peep');  // what one post is called ("Peep", "Repeep")
-define('PEEP_ASSET_VERSION', '2026-10-31e');  // bump after changing CSS/JS so browsers and caches fetch the new files
+define('PEEP_ASSET_VERSION', '2026-10-31f');  // bump after changing CSS/JS so browsers and caches fetch the new files
 define('PEEP_SOURCE_URL', 'https://github.com/2three1y/peep');
 
 // Database: PEEP_DB env var, else chirp.db one folder ABOVE the site (so it can never be downloaded).

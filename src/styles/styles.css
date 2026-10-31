@@ -2885,3 +2885,7 @@ button#iconChirp { justify-content: center; align-items: center; }
 }
 .peepInline { display: inline; width: auto; margin: 0 0 0 8px; }
 .peepList li { margin: 6px 0; }
+/* peep: keep the sign-in form together instead of spread over the whole screen */
+#signedOut { height: auto; min-height: 0; justify-content: flex-start; gap: 4px; padding-top: 24px; }
+#signedOut > form { margin: 12px auto; flex: none; width: 100%; align-items: stretch; }
+#signedOut .peepForm label { text-align: left; }
