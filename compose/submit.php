@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../include/config.php';
 session_start();
 
 header('Content-Type: application/json');
@@ -12,8 +13,8 @@ try {
 
     // Check if the host is allowed
     $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : "none";
-    $allowedHosts = ['beta.chirpsocial.net', 'lambsauce.chirpsocial.net', '127.0.0.1:5500', '192.168.1.230:5500'];
-    if ($host === "none" || !in_array($host, $allowedHosts)) {
+    // peep: same-origin check instead of Chirp's hardcoded chirpsocial.net host list
+    if ($host === "none" || !peep_same_origin()) {
         echo json_encode(['error' => "Invalid host."]);
         exit;
     }
@@ -24,7 +25,7 @@ try {
         exit;
     }
 
-    $db = new PDO('sqlite:' . __DIR__ . '/../../chirp.db');
+    $db = peep_db();
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Get the user ID from the users table
@@ -66,12 +67,12 @@ try {
     // Check if chirp text is empty or exceeds maximum allowed characters
     $chirpText = trim($_POST['chirpComposeText']);
     if (empty($chirpText)) {
-        echo json_encode(['error' => "Chirp cannot be empty."]);
+        echo json_encode(['error' => "Your post is empty."]);
         exit;
     }
 
     if (strlen($chirpText) > MAX_CHARS) {
-        echo json_encode(['error' => "Chirp exceeds maximum character limit of " . MAX_CHARS . " characters."]);
+        echo json_encode(['error' => "Your post is over the character limit of " . MAX_CHARS . " characters."]);
         exit;
     }
 
@@ -95,12 +96,13 @@ try {
         // Update last submission time in session
         $_SESSION['last_submission_time'] = $currentTime;
     
+        peep_flash('Posted');
         // Ensure the location header is set properly
         header('Location: /chirp/index.php?id=' . $chirpId, true, 303);
         exit;
     } else {
         // Execution failed
-        echo json_encode(['error' => 'Failed to post chirp.']);
+        echo json_encode(['error' => 'Could not post.']);
         exit;
     }
 } catch (PDOException $e) {

@@ -1,23 +1,24 @@
 <?php
+require_once __DIR__ . '/../include/config.php';
 session_start();
 
 try {
     // Check if the host is allowed
     $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : "none";
-    $allowedHosts = ['beta.chirpsocial.net'];
-    if ($host === "none" || !in_array($host, $allowedHosts)) {
+    // peep: same-origin check instead of Chirp's hardcoded chirpsocial.net host list
+    if ($host === "none" || !peep_same_origin()) {
         header($_SERVER['SERVER_PROTOCOL'] . ' 400 Bad Request');
         exit;
     }
 
     // Check if the user is logged in
     if (!isset($_SESSION['username'])) {
-        $_SESSION['error_message'] = "You need to be logged in to post.";
+        peep_flash("You need to be logged in to post.");
         header('Location: /signin/');
         exit;
     }
 
-    $db = new PDO('sqlite:' . __DIR__ . '/../../chirp.db');
+    $db = peep_db();
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Get the user ID from the users table
@@ -28,7 +29,7 @@ try {
     $user = $userStmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$user) {
-        $_SESSION['error_message'] = "User not found.";
+        peep_flash("User not found.");
         header('Location: /signin/');
         exit;
     }
@@ -50,7 +51,7 @@ try {
     if ($currentTime - $lastSubmissionTime < $cooldownSeconds) {
         // Rate limit exceeded, increment attempt count
         $_SESSION['attempt_count'] = ++$attemptCount;
-        $_SESSION['error_message'] = "You are posting too quickly. Slow down!";
+        peep_flash("You are posting too quickly. Slow down!");
         header('Location: /');
         exit;
     }
@@ -61,13 +62,13 @@ try {
     // Check if chirp text is empty or exceeds maximum allowed characters
     $chirpText = trim($_POST['replyComposeText']);
     if (empty($chirpText)) {
-        $_SESSION['error_message'] = "Chirp cannot be empty.";
+        peep_flash("Your reply is empty.");
         header('Location: /');
         exit;
     }
 
     if (strlen($chirpText) > MAX_CHARS) {
-        $_SESSION['error_message'] = "Chirp exceeds maximum character limit of " . MAX_CHARS . " characters.";
+        peep_flash("Your reply is over the character limit of " . MAX_CHARS . " characters.");
         header('Location: /');
         exit;
     }
@@ -76,7 +77,7 @@ try {
     $mainPostId = isset($_GET['id']) ? intval($_GET['id']) : null;
 
     if ($mainPostId === null) {
-        $_SESSION['error_message'] = "Main post ID not provided.";
+        peep_flash("Main post ID not provided.");
         header('Location: /');
         exit;
     }
@@ -101,16 +102,17 @@ try {
     // Update last submission time in session
     $_SESSION['last_submission_time'] = $currentTime;
 
-    // Redirect to the chirp details page with the chirp ID
-    header('Location: /chirp/index.php?id=' . $chirpId);
+    peep_flash('Reply posted');
+    // peep: go back to the post that was replied to, so the reply shows in its thread
+    header('Location: /chirp/index.php?id=' . $mainPostId);
     exit();
 
 } catch (PDOException $e) {
-    $_SESSION['error_message'] = 'Database error: ' . $e->getMessage();
+    peep_flash('Database error: ' . $e->getMessage());
     header('Location: /');
     exit;
 } catch (Exception $e) {
-    $_SESSION['error_message'] = 'General error: ' . $e->getMessage();
+    peep_flash('General error: ' . $e->getMessage());
     header('Location: /');
     exit;
 }
