@@ -856,7 +856,7 @@ footer>div>a.active {
     /* Border radius */
 }
 
-div#iconChirp{
+#iconChirp{
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -864,7 +864,7 @@ div#iconChirp{
 }
 
 /* Styles for iconChirp image */
-div#iconChirp>img {
+#iconChirp>img {
     color: var(--text-colorUI);
     /* Text color */
     text-decoration: none;
@@ -2840,3 +2840,48 @@ aside::-webkit-scrollbar {
 div.morePostOptionsModal>ul>li:hover{
     background-color: var(--semiTrans-bg);
 }
+/* ---------- peep: accessibility + fork additions ---------- */
+.srOnly {
+    position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+.title h1, .title h2 { font-size: inherit; font-weight: inherit; margin: 0; }
+.postAuthor { font-size: inherit; font-weight: 600; margin: 0; padding-left: 8px; line-height: inherit; }
+.chirpInfo>div>div>.postAuthor { margin: 0; padding-left: 8px; }
+.chirpThread .postAuthor { padding-left: 8px; }
+.chirpClicker { cursor: pointer; display: block; color: inherit; }
+.usernameLink, .chirpInfo .usernameLink { color: inherit; text-decoration: none; }
+.logoButton, button#iconChirp { background: none; border: 0; padding: 0; margin: 0; cursor: pointer; color: inherit; font: inherit; }
+.logoButton img { display: block; }
+button#iconChirp { justify-content: center; align-items: center; }
+.peepIcon { vertical-align: -0.125em; }
+:focus-visible { outline: 3px solid var(--accent-color, #1AD063); outline-offset: 2px; }
+.peepForm { display: flex; flex-direction: column; gap: 6px; max-width: 420px; }
+.peepForm label { font-weight: 600; margin-top: 8px; }
+.peepForm input { font: inherit; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--borderColor, #8884); background: var(--bgColor, transparent); color: inherit; }
+.peepForm button { margin-top: 12px; align-self: flex-start; }
+#signupForm fieldset { border: 0; padding: 0; margin: 0; }
+#signupForm legend { font-weight: 700; margin-bottom: 4px; }
+.peepError { color: #D92D20; font-weight: 600; }
+.peepNotice { border: 2px solid var(--accent-color, #1AD063); border-radius: 12px; padding: 8px 14px; margin: 12px 0; }
+.peepNotice.peepError { border-color: #D92D20; }
+.peepCode { font-family: ui-monospace, Menlo, monospace; font-size: 1.15em; letter-spacing: 0.06em; }
+.peepAdmin section, .peepPanel { margin: 18px 16px; }
+.peepAdmin h2, .peepPanel h2 { font-size: 1.15em; margin: 0 0 6px; }
+.peepList { padding-left: 1.2em; }
+.peepCredit { margin-top: 12px; }
+.notFoundTitle { font-size: 1.2em; margin: 0; }
+.interactLinkerPost { color: inherit; }
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+.peepMenuItem { background: none; border: 0; color: inherit; font: inherit; padding: 0; cursor: pointer; text-align: left; width: 100%; }
+#signupForm fieldset > label, #signupForm fieldset > input, #signupForm fieldset > legend { display: block; }
+#signupForm fieldset > input, #signInForm > input, .peepForm > input { width: 100%; max-width: 420px; box-sizing: border-box; }
+#signupForm fieldset > button { margin-top: 12px; }
+@media only screen and (max-width: 890px) {
+    /* peep: the post page header is taller (logo + Back), keep it from covering the author */
+    body:has(#back) div#chirps { margin-top: 118px; }
+}
+.peepInline { display: inline; width: auto; margin: 0 0 0 8px; }
+.peepList li { margin: 6px 0; }

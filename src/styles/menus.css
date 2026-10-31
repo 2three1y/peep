@@ -203,3 +203,6 @@ ul>li>a.menuOption{
 ul>li>a>div>p{
     margin-bottom: 0px;
 }
+/* peep: the logo is now a real <button>; keep the original 32px size */
+header > div > nav > .logoButton { align-self: flex-start; }
+header > div > nav > .logoButton > img { width: 32px; height: 32px; padding: 8px; }

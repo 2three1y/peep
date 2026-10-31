@@ -42,7 +42,7 @@
     }
 
     /* Hide element with ID 'iconChirp' */
-    div#iconChirp {
+    #iconChirp {
         display: none;
     }
 
