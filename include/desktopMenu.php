@@ -1,6 +1,7 @@
+<?php require_once __DIR__ . '/../include/config.php'; ?>
 <div id="desktopMenu">
     <nav>
-        <img src="/src/images/icons/chirp.svg" alt="Chirp" onclick="playChirpSound()">
+        <button type="button" class="logoButton" onclick="playChirpSound()" aria-label="Play the peep sound"><img src="/src/images/icons/chirp.svg" alt=""></button>
         <a href="/"><img src="/src/images/icons/house.svg" alt=""> Home</a>
         <a href="/discover"><img src="/src/images/icons/search.svg" alt=""> Discover</a>
         <a href="/notifications"><img src="/src/images/icons/bell.svg" alt=""> Notifications</a>

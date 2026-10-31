@@ -1,12 +1,8 @@
 <?php
+require_once __DIR__ . '/include/config.php';
 
-// List of allowed origins
-$allowedOrigins = [
-    "https://beta.chirpsocial.net",
-    "https://chirpsocial.net",
-    "http://legacy.chirpsocial.net",
-    "https://legacy.chirpsocial.net"
-];
+// peep: no cross-origin access; the timeline is only read by this site itself.
+$allowedOrigins = [];
 
 // Get the Origin header from the request
 if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowedOrigins)) {
@@ -97,7 +93,7 @@ function makeLinksClickable($text) {
 
 // Improved error handling and data fetching logic
 try {
-    $db = new PDO('sqlite:' . __DIR__ . '/../chirp.db');
+    $db = peep_db();
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $offset = isset($_GET['offset']) ? max((int)$_GET['offset'], 0) : 0;

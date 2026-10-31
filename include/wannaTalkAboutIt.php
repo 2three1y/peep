@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/../include/config.php'; ?>
 <div id="wannaTalkAboutItModal" class="modal">
     <div class="modal-content editBannerModalContent wannaTalkAboutIt">
         <h2>❤️<br>We're here for you</h2>
@@ -10,7 +11,7 @@
         <p class="subText">It's always okay to ask for help, and Chirp is here to support you. If you'd like, you can
             also enable post filters to limit certain topics and create a more comfortable space for yourself.</p>
         <div class="modal-buttons">
-            <a target="_blank" rel="nooepner noreferer" href="https://www.wannatalkaboutit.com/"
+            <a href="/signin/forgot/password/"
                 class="followButton">Find resources</a>
             <button class="button following" id="okButton" onClick="closeWannaTalkAboutItModal()">No thanks</button>
         </div>

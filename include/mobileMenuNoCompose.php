@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/../include/config.php'; ?>
 <div>
     <a href="/" class="active"><img src="/src/images/icons/house.svg" alt="Home"></a>
     <a href="/discover"><img src="/src/images/icons/search.svg" alt="Discover"></a>

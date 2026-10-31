@@ -1,6 +1,7 @@
 <?php
+require_once __DIR__ . '/../include/config.php';
 try {
-    $db = new PDO('sqlite:' . __DIR__ . '/../../chirp.db');
+    $db = peep_db();
     $query = isset($_GET['query']) ? trim($_GET['query']) : '';
 
     if ($query !== '') {

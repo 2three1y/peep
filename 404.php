@@ -1,15 +1,14 @@
+<?php require_once __DIR__ . '/include/config.php'; ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="UTF-8">
   <meta name="theme-color" content="#00001"/>
-  <link href="/src/styles/styles.css" rel="stylesheet">
-  <link href="/src/styles/timeline.css" rel="stylesheet">
-  <link href="/src/styles/menus.css" rel="stylesheet">
-  <link href="/src/styles/responsive.css" rel="stylesheet">
-
-  <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
-  <script src="/src/scripts/general.js"></script>
+  <link href="/src/styles/styles.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+  <link href="/src/styles/timeline.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+  <link href="/src/styles/menus.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+  <link href="/src/styles/responsive.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+  <script src="/src/scripts/general.js?v=<?php echo PEEP_ASSET_VERSION; ?>"></script>
  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -26,7 +25,7 @@
     <header>
         <div id="desktopMenu">
             <nav>
-         <img src="/src/images/icons/chirp.svg" alt="Chirp" onclick="playChirpSound()">
+         <button type="button" class="logoButton" onclick="playChirpSound()" aria-label="Play the peep sound"><img src="/src/images/icons/chirp.svg" alt=""></button>
                 <a href="/"><img src="/src/images/icons/house.svg" alt=""> Home</a>
                 <a href="/discover"><img src="/src/images/icons/search.svg" alt=""> Discover</a>
                 <a href="/notifications"><img src="/src/images/icons/bell.svg" alt=""> Notifications</a>
@@ -49,10 +48,9 @@
         </div>
     </header>
     <main>
+        <h1 class="srOnly">Page not found</h1>
         <div id="feed">
-            <div id="iconChirp" onclick="playChirpSound()">
-         <img src="/src/images/icons/chirp.svg" alt="Chirp">
-            </div>
+            <button type="button" id="iconChirp" onclick="playChirpSound()" aria-label="Play the peep sound"><img src="/src/images/icons/chirp.svg" alt=""></button>
             <div id="notFound">
                 <p>404 / Not Found</p>
                 <p class="subText">Chirpie has searched everywhere but can't find what you were looking for.<br>Maybe it flew away?</p>
@@ -60,48 +58,17 @@
         </div>
     </main>
     <aside id="sideBar">
-        <div id="trends">
-            <p>Trends</p>
-            <div>
-                <a href="/discover/search?q=gay_people">chirp</a>
-                <p class="subText">12 chirps</p>
-            </div>
-            <div>
-                <a>twitter</a>
-                <p class="subText">47 chirps</p>
-            </div>
-            <div>
-                <a>iphone 16</a>
-                <p class="subText">62 chirps</p>
-            </div>
+
+
         </div>
-        <div id="whotfollow">
-            <p>Suggested accounts</p>
-            <div>
-                <div>
-                <img class="userPic" src="https://pbs.twimg.com/profile_images/1797665112440045568/305XgPDq_400x400.png" alt="">
-                <div>
-                    <p>Apple <img class="verified" src="/src/images/icons/verified.svg" alt=""></p><p class="subText">@apple</p>
-                </div>
-            </div>
-                <a class="followButton">Follow</a>
-            </div>
-            <div>
-                <div>
-                <img class="userPic" src="https://pbs.twimg.com/profile_images/1881368435453542400/NnD56DYV_400x400.jpg" alt="">
-                <div>
-                    <p>President Trump <img class="verified" src="/src/images/icons/verified.svg" alt=""></p><p class="subText">@POTUS</p>
-                </div>
-            </div>
-                <a class="followButton">Follow</a></div>
-            </div>
-        </div>
-        <div>
-            <p class="subText">Inspired by Twitter/X. No code has been sourced from Twitter/X. Twemoji by Twitter Inc/X Corp is licensed under CC-BY 4.0.
-<br><br>You're running: Chirp Beta 0.7b </p>
-        </div>
+        <div class="peepCredit">
+    <p class="subText"><?php echo htmlspecialchars(PEEP_NAME); ?> is a fork of Chirp by <a class="subText" href="https://aridan.net" rel="noopener noreferrer">Adnan Bukvic</a> and the Chirp contributors, MIT license.</p>
+    <p class="subText"><a class="subText" href="<?php echo PEEP_SOURCE_URL; ?>" rel="noopener noreferrer">Source code on GitHub</a>. Co-written with Tab.</p>
+</div>
     </aside>
     <footer>
     </footer>
+<div id="peepStatus" class="srOnly" role="status" aria-live="polite" data-flash="<?php echo peep_take_flash(); ?>"></div>
+    <script src="/src/scripts/peep.js?v=<?php echo PEEP_ASSET_VERSION; ?>"></script>
 </body>
 </html>

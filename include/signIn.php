@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/../include/config.php'; ?>
 <div>
     <div class="modal modalCompose" id="newChirpModal" style="display: flex;">
         <div class="modal-content modalContentCompose">

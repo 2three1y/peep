@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/../include/config.php'; ?>
 <div class="mobileCompose">
     <a class="chirpMoile" href="compose">Chirp</a>
 </div>
