@@ -145,7 +145,7 @@ function back() {
     if (document.referrer) {
         window.history.back();
     } else {
-        window.location.href = 'https://beta.chirpsocial.net';
+        window.location.href = '/';
     }
 }
 

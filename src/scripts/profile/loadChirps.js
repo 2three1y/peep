@@ -27,105 +27,8 @@ function loadChirps() {
             .then(response => response.json())
             .then(chirps => {
                 chirps.forEach(chirp => {
-                    // Create chirp div
-                    const chirpDiv = document.createElement('div');
-                    chirpDiv.className = 'chirp';
-                    chirpDiv.id = chirp.id;
-
-                    // Create chirpClicker link
-                    const chirpClicker = document.createElement('a');
-                    chirpClicker.className = 'chirpClicker';
-                    chirpClicker.href = `/chirp?id=${chirp.id}`;
-
-                    // Create chirpInfo div
-                    const chirpInfo = document.createElement('div');
-                    chirpInfo.className = 'chirpInfo';
-
-                    // User picture
-                    const userPic = document.createElement('img');
-                    userPic.className = 'userPic';
-                    userPic.src = chirp.profilePic ? chirp.profilePic : '/src/images/users/guest/user.svg';
-                    userPic.alt = chirp.name ? chirp.name : 'Guest';
-
-                    // User details
-                    const userDetails = document.createElement('div');
-                    const userName = document.createElement('p');
-                    userName.innerHTML = `
-                ${chirp.name ? chirp.name : 'Guest'} 
-                ${chirp.isVerified ? '<img class="verified" src="/src/images/icons/verified.svg" alt="Verified">' : ''}
-            `;
-                    const userUsername = document.createElement('p');
-                    userUsername.className = 'subText';
-                    userUsername.innerText = `@${chirp.username ? chirp.username : 'guest'}`;
-
-                    userDetails.appendChild(userName);
-                    userDetails.appendChild(userUsername);
-
-                    // Add user picture and details to chirpInfo
-                    const userWrapper = document.createElement('div');
-                    userWrapper.appendChild(userPic);
-                    userWrapper.appendChild(userDetails);
-                    chirpInfo.appendChild(userWrapper);
-
-                    // Timestamp
-                    const timestampDiv = document.createElement('div');
-                    timestampDiv.className = 'timestampTimeline';
-                    const postedDate = document.createElement('p');
-                    postedDate.className = 'subText postedDate';
-                    postedDate.setAttribute('data-timestamp', chirp.timestamp);
-                    timestampDiv.appendChild(postedDate);
-                    chirpInfo.appendChild(timestampDiv);
-
-                    // Preformatted chirp text
-                    const chirpText = document.createElement('pre');
-                    chirpText.innerHTML = chirp.chirp;
-
-                    // Add chirpInfo and text to chirpClicker
-                    chirpClicker.appendChild(chirpInfo);
-                    chirpClicker.appendChild(chirpText);
-
-                    // Create chirpInteract div
-                    const chirpInteract = document.createElement('div');
-                    chirpInteract.className = 'chirpInteract';
-
-                    // Reply button
-                    const replyButton = document.createElement('button');
-                    replyButton.type = 'button';
-                    replyButton.className = 'reply';
-                    replyButton.onclick = () => location.href = `/chirp/?id=${chirp.id}`;
-                    replyButton.innerHTML = `<img alt="Reply" src="/src/images/icons/reply.svg"> <span class="reply-count">${chirp.reply_count}</span>`;
-
-                    // Rechirp button
-                    const rechirpButton = document.createElement('button');
-                    rechirpButton.type = 'button';
-                    rechirpButton.className = 'rechirp';
-                    rechirpButton.onclick = () => updateChirpInteraction(chirp.id, 'rechirp', rechirpButton);
-                    rechirpButton.innerHTML = `<img alt="Rechirp" src="/src/images/icons/${chirp.rechirped_by_current_user ? 'rechirped' : 'rechirp'}.svg"> <span class="rechirp-count">${chirp.rechirp_count}</span>`;
-
-                    // Like button
-                    const likeButton = document.createElement('button');
-                    likeButton.type = 'button';
-                    likeButton.className = 'like';
-                    likeButton.onclick = () => updateChirpInteraction(chirp.id, 'like', likeButton);
-                    likeButton.innerHTML = `<img alt="Like" src="/src/images/icons/${chirp.liked_by_current_user ? 'liked' : 'like'}.svg"> <span class="like-count">${chirp.like_count}</span>`;
-
-                    // interactLinker
-                    const interactLinker = document.createElement('a');
-                    interactLinker.className = 'interactLinkerPost';
-                    interactLinker.href = `/chirp?id=${chirp.id}`;
-
-                    // Append buttons to chirpInteract
-                    chirpInteract.appendChild(replyButton);
-                    chirpInteract.appendChild(rechirpButton);
-                    chirpInteract.appendChild(likeButton);
-                    chirpInteract.appendChild(interactLinker);
-
-                    // Append chirpClicker and interact div to chirpDiv
-                    chirpDiv.appendChild(chirpClicker);
-                    chirpDiv.appendChild(chirpInteract);
-
-                    // Finally append chirpDiv to the container
-                    chirpsContainer.appendChild(chirpDiv);
+                    // peep: one accessible <article> per post (src/scripts/peep.js)
+                    chirpsContainer.appendChild(peepRenderPost(chirp, 2));
 
                 });
 
@@ -160,7 +63,7 @@ document.querySelectorAll('.reply, .rechirp, .like').forEach(button => {
 });
 
 // Update chirp interaction (like/rechirp)
-function updateChirpInteraction(chirpId, action, button) {
+function legacyUpdateChirpInteraction(chirpId, action, button) {
     fetch(`/interact_chirp.php`, {
         method: 'POST',
         headers: {
