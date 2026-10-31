@@ -1,74 +1,70 @@
-# Chirp
+# peep
 
-![Chirp logo](/src/images/users/chirp/banner.png)
+A small, invite-only social network for friends, made to work well with VoiceOver.
 
-A social media project meant to mimic the feel of Twitter but be better
+peep is a fork of **[Chirp](https://github.com/actuallyaridan/chirp)** by [Adnan Bukvic](https://aridan.net) and the Chirp contributors. Chirp was a Twitter-style social network written in PHP with SQLite. Adnan archived it; this fork brings it back to life, fixes a few things and makes it much friendlier to screen readers.
 
-## Status
+Adnan asked forks not to use the Chirp name, so this one is called peep. The name lives in one place (`include/config.php`, `PEEP_NAME` and `PEEP_POST_WORD`) and in this README, so renaming it later is a two-line change.
 
-### What's working
-- [x] Account creation
-- [x] Posting
-- [x] Replying
-- [x] Liking
-- [x] Account editing
+Live: https://peep.sites.tab.bot/ (invite-only)
 
-### What isn't working
-- [ ] Reposts
-- [ ] Viewing likes and reposts on accounts
+## What works
 
-### What's planned
-- [ ] Post editing
-- [ ] Post deletion
-- [ ] Following
-- [ ] Search
-- [ ] Trends
-- [ ] "For you" timeline
+- Sign up with an invite code, sign in, sign out
+- Post, reply, like, follow, profiles, the home timeline
+- Admin panel: make invite codes, reset someone's password, remove an account, download a backup
 
-## Screenshot
+## What changed from Chirp
 
-![Chirp on Desktop](/src/images/screenshots/chirpDesktop.png)
+**Accessibility (VoiceOver first)**
+- One `h1` on every page, and headings on the sign-in, sign-up and post pages
+- Every post is an `<article>` with the author's name as a heading, so the VoiceOver rotor jumps post to post
+- Real `<label>`s on every form field (sign up, sign in, compose, reply, search, settings)
+- Like is a toggle button with `aria-pressed` that says "Like, 3 likes" or "Unlike, 3 likes"; repost works the same way
+- One polite live region announces "Posted", "Reply posted", "Liked", "Following" and errors
+- The empty link on every post now says "Open peep by (name)"
+- The logo sound is a real button ("Play the peep sound")
+- Times read as "5 minutes ago" instead of "5m"
+- Compose and reply open as dialogs: focus moves in, Escape closes, focus goes back
+- Native emoji (no emoji images), so VoiceOver reads them by name
+- Respects Reduce Motion; visible focus rings
 
+**Safety**
+- The public "forgot password" reset (username + invite code was enough to take over an account) is gone. An admin resets passwords; signed-in people change theirs in Settings, Security and login, which needs the current password
+- Signup stays invite-only, and each invite works once
+- Admins are users with `is_admin = 1` instead of the hardcoded username `chirp`
+- The session cookie is Secure whenever the site is on https (Chirp always set it, which broke plain-http testing)
+- Posting checks that the request came from the same site (Chirp only allowed `beta.chirpsocial.net`)
+- PHP warnings are logged, never printed into pages
 
-## Contributing to Chirp
-Chirps source code (as you can see) is open source. You can freely fork this repo, make changes and then create a pull request.
-If you'd like to, provide your Chirp username and you'll gain a contributors badge next to your name.
+**Cleanup**
+- No Cloudflare analytics, no CDNs: Font Awesome icons are inline SVG and Twemoji is gone
+- Removed dead links (help./legacy.chirpsocial.net), Twitter profile images and the placeholder "suggested accounts" and "trends"
+- The sample database is vacuumed (7.3 MB to 76 KB)
 
-### Dealing with code
+## Run it
 
-#### Using PHPs built-in server
-
-_clone this git repo and put it where you like it and `cd` into it_
-
-```sh
-php -S localhost:port
-```
-
-#### Using Apache/XAMPP
-
-_have `PHP` and `PDO` with SQLite support installed_
+You need PHP 8 with `pdo_sqlite` and `mbstring`.
 
 ```sh
-git clone https://github.com/actuallyaridan/chirp
-mv chirp /var/www/
-# Or other place your Apache or XAMPP install uses for hosting coontent
+git clone https://github.com/2three1y/peep
+cd peep
+php tools/setup.php --admin=yourname   # makes ../chirp.db, your admin account and 3 invite codes
+php -S localhost:8080
 ```
 
-**BTW that folder should be empty - if it's something like `/htdocs/chirp` it will 99% break**
+`setup.php` prints the admin password once. Set `PEEP_DB=/path/to/peep.db` to keep the database somewhere else. The database is never inside the site folder, so it can't be downloaded.
 
-#### Database
+On Tab's hosting the app runs with a static PHP 8.3 build (from [static-php-cli](https://github.com/crazywhalecc/static-php-cli)); the database lives outside the site folder so updates never touch posts or accounts.
 
-This project is currently using SQLite. Chrips database is not included in GitHub, as it contains sensntive information that will not be shared publicly. There are however refereces in the PHP files, so you can create an empty replica if you'd like to.
+## Credits
 
-## Forking Chirp
+- [Chirp](https://github.com/actuallyaridan/chirp) by Adnan Bukvic and the Chirp contributors (MIT)
+- The bird logo is the Twemoji bird by Twitter, Inc. and other contributors, [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+- Fonts in `src/styles/fonts` come from the original Chirp repo
 
-You can freely made copies of Chirp and use Chirps code as a base for your procject. However, in order to be cool, please follow these guidelines:
+Co-written with Tab.
 
-• Rebrand your project: Please refrain from uisng any Chirp branding in your project
+## License
 
-• Credit us: You should provide credit to the people who have contibuted to this project, or link this repo
-
-Other than that, Chirp uses the MIT license.
-
-
-
+MIT, same as Chirp. See [LICENSE](LICENSE).
