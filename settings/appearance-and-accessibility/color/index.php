@@ -1,26 +1,22 @@
 <?php
+require_once __DIR__ . '/../../../include/config.php';
 session_start();
 ?>
 
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
 
 <head>
     <meta charset="UTF-8">
     <meta name="mobile-web-app-capable" content="yes">
 
 
-    <link href="/src/styles/styles.css" rel="stylesheet">
-    <link href="/src/styles/timeline.css" rel="stylesheet">
-    <link href="/src/styles/menus.css" rel="stylesheet">
-    <link href="/src/styles/responsive.css" rel="stylesheet">
-    <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js"
-        crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-        integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="/src/scripts/general.js"></script>
+    <link href="/src/styles/styles.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+    <link href="/src/styles/timeline.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+    <link href="/src/styles/menus.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+    <link href="/src/styles/responsive.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+    <script src="/src/scripts/general.js?v=<?php echo PEEP_ASSET_VERSION; ?>"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -33,7 +29,7 @@ session_start();
     <header>
         <div id="desktopMenu">
             <nav>
-                <img src="/src/images/icons/chirp.svg" alt="Chirp" onclick="playChirpSound()">
+                <button type="button" class="logoButton" onclick="playChirpSound()" aria-label="Play the peep sound"><img src="/src/images/icons/chirp.svg" alt=""></button>
                 <a href="/"><img src="/src/images/icons/house.svg" alt=""> Home</a>
                 <a href="/discover"><img src="/src/images/icons/search.svg" alt=""> Discover</a>
                 <?php if (isset($_SESSION['username'])): ?>
@@ -48,7 +44,7 @@ session_start();
             </nav>
 
             <div id="menuSettings">
-                <?php if (isset($_SESSION['username']) && $_SESSION['username'] == 'chirp'): ?>
+                <?php if (peep_is_admin()): ?>
                     <a href="/admin">🛡️ Admin panel</a>
                 <?php endif; ?>
                 <a href="/settings/account">⚙️ Settings</a>
@@ -79,11 +75,9 @@ session_start();
     </header>
     <main>
         <div id="feed" class="settingsPageContainer">
-            <div id="iconChirp" onclick="playChirpSound()">
-                <img src="/src/images/icons/chirp.svg" alt="Chirp">
-            </div>
+            <button type="button" id="iconChirp" onclick="playChirpSound()" aria-label="Play the peep sound"><img src="/src/images/icons/chirp.svg" alt=""></button>
             <div class="title">
-                <p class="selcted">Settings</p>
+                <h1 class="selected">Settings</h1>
                 <p class="selcted settingsTab"><button id="back" class="settingsTab" onclick="back()"><i
                             class="fa-solid fa-arrow-left"></i> Color </button></p>
             </div>
@@ -114,7 +108,6 @@ session_start();
                             <a class="settingsMenuLink" href="/settings/notifications">🔔 Notifications</a>
                         </li>
                         <li>
-                            <a class="settingsMenuLink" href="https://help.chirpsocial.net">📕 Help Center</a>
                         </li>
                     </ul>
 
@@ -245,6 +238,8 @@ session_start();
                     src="/src/images/icons/person.svg" alt="Profile"></a>
         </div>
     </footer>
+<div id="peepStatus" class="srOnly" role="status" aria-live="polite" data-flash="<?php echo peep_take_flash(); ?>"></div>
+    <script src="/src/scripts/peep.js?v=<?php echo PEEP_ASSET_VERSION; ?>"></script>
 </body>
 
 </html>
