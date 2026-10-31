@@ -1,9 +1,10 @@
 <?php
+require_once __DIR__ . '/../include/config.php';
 session_start();
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
 
 <head>
     <meta charset="UTF-8">
@@ -11,13 +12,11 @@ session_start();
     <meta name="mobile-web-app-capable" content="yes">
     
 
-    <link href="/src/styles/styles.css" rel="stylesheet">
-    <link href="/src/styles/timeline.css" rel="stylesheet">
-    <link href="/src/styles/menus.css" rel="stylesheet">
-    <link href="/src/styles/responsive.css" rel="stylesheet">
-    <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous">
-    </script>
-    <script src="/src/scripts/general.js"></script>
+    <link href="/src/styles/styles.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+    <link href="/src/styles/timeline.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+    <link href="/src/styles/menus.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+    <link href="/src/styles/responsive.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+    <script src="/src/scripts/general.js?v=<?php echo PEEP_ASSET_VERSION; ?>"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -30,7 +29,7 @@ session_start();
     <header>
         <div id="desktopMenu">
             <nav>
-                <img src="/src/images/icons/chirp.svg" alt="Chirp" onclick="playChirpSound()">
+                <button type="button" class="logoButton" onclick="playChirpSound()" aria-label="Play the peep sound"><img src="/src/images/icons/chirp.svg" alt=""></button>
                 <a href="/"><img src="/src/images/icons/house.svg" alt=""> Home</a>
                 <a href="/discover"><img src="/src/images/icons/search.svg" alt=""> Discover</a>
                 <?php if (isset($_SESSION['username'])): ?>
@@ -44,7 +43,7 @@ session_start();
                 <?php endif; ?>
             </nav>
             <div id="menuSettings">
-                <?php if (isset($_SESSION['username']) && $_SESSION['username'] == 'chirp'): ?>
+                <?php if (peep_is_admin()): ?>
                 <a href="/admin">🛡️ Admin panel</a>
                 <?php endif; ?>
                 <a href="/settings/account">⚙️ Settings</a>
@@ -75,116 +74,50 @@ session_start();
     </header>
     <main>
         <div id="feed">
-            <div id="iconChirp" onclick="playChirpSound()">
-                <img src="/src/images/icons/chirp.svg" alt="Chirp">
-            </div>
+            <button type="button" id="iconChirp" onclick="playChirpSound()" aria-label="Play the peep sound"><img src="/src/images/icons/chirp.svg" alt=""></button>
             <div class="title">
-                <p class="selected">Sign up</p>
+                <h1 class="selected">Sign up</h1>
             </div>
             <div id="signUp">
-                <p>Let's create an account for you!</p>
-                <form id="signupForm" method="post" action="/signup/signup.php">
-                    <div id="inviteCode">
-                        <p class="subText">Chirp is invite only for the time being. You'll need an invite code to create
-                            an
-                            account.</p>
-                        <p class="subText">Don't have an invite code? You can get one by sending a DM on Twitter to
-                            @actuallyaridan or @use_chirp.</p>
-                        <div id="inputSignup">
-                            <input type="text" id="code" name="code" placeholder="Invite code" required>
-                            <button type="button" class="followButton"
-                                onclick="showNextSection('nameUser')">Next</button>
-                        </div>
-                    </div>
-                    <div id="nameUser">
-                        <p class="subText">Great! Now Chirpie just needs to get to know you and he'll set up your
-                            account in
-                            no time!</p>
-                        <div id="inputSignup">
-                            <div id="inputName">
-                                <input type="text" id="name" name="name" placeholder="Name" required>
-                                <input type="text" id="username" name="username" placeholder="Username" required>
-                            </div>
-                            <input type="email" id="email" name="email" placeholder="example@email.com" required>
-                            <button type="button" class="followButton"
-                                onclick="showNextSection('pwordUser')">Next</button>
-                        </div>
-                    </div>
-                    <div id="pwordUser">
-                        <p class="subText">Amazing! Now we just need to set up a password for you and you'll be all
-                            done!
-                        </p>
-                        <div id="inputSignup">
-                            <div id="inputName">
-                                <input type="password" id="pword" name="pword" placeholder="Password" required>
-                                <input type="password" id="pwordConfirm" name="pwordConfirm"
-                                    placeholder="Confirm password" required>
-                            </div>
-                            <button type="submit" class="followButton">Complete</button>
-                        </div>
-                    </div>
+                <p>Let's make your account. You'll need an invite code from a friend who's already here, or from the admin.</p>
+                <form id="signupForm" class="peepForm" method="post" action="/signup/signup.php" novalidate>
+                    <fieldset id="inviteCode">
+                        <legend>Step 1 of 3: Invite code</legend>
+                        <label for="code">Invite code</label>
+                        <input type="text" id="code" name="code" autocomplete="off" autocapitalize="characters" spellcheck="false" required>
+                        <button type="button" class="followButton" onclick="showNextSection('nameUser')">Next</button>
+                    </fieldset>
+                    <fieldset id="nameUser">
+                        <legend>Step 2 of 3: About you</legend>
+                        <label for="name">Display name</label>
+                        <input type="text" id="name" name="name" autocomplete="nickname" required>
+                        <label for="username">Username (letters, numbers and _ only)</label>
+                        <input type="text" id="username" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" pattern="[A-Za-z0-9_]+" required>
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" autocomplete="email" required>
+                        <button type="button" class="followButton" onclick="showNextSection('pwordUser')">Next</button>
+                    </fieldset>
+                    <fieldset id="pwordUser">
+                        <legend>Step 3 of 3: Password</legend>
+                        <label for="pword">Password</label>
+                        <input type="password" id="pword" name="pword" autocomplete="new-password" required>
+                        <label for="pwordConfirm">Password again</label>
+                        <input type="password" id="pwordConfirm" name="pwordConfirm" autocomplete="new-password" required>
+                        <button type="submit" class="followButton">Create account</button>
+                    </fieldset>
                 </form>
-                <div id="errors">
-                    <p id="invalidCodeError">Invalid invite code.<br>If you don't have an invite code, send a DM to @actuallyaridan or @use_chirp over Twitter.</p>
-                    <p id="usernameTakenError">This username already in use.<br>You need to have a unique username.</p>
-                    <p id="passwordMismatchError">Passwords do not match</p>
-                    <p id="invalidUsernameError">Invalid username. <br>Only latin letters A to Z, numbers 0 to 9 along with underscores are allowed.</p>
-                    <p id="reservedUsernameError">This username is reserved.<br>You need a reserved invite code in order to register it. Obtain one by sending a DM to @actuallyaridan or @use_chirp over Twitter.</p>
-                    <p id="inviteNotReservedError">You're using a reserved invite code. <br>You must register the username linked with this invite code.</p>
-                </div>
+                <p id="signupError" class="peepError" role="alert" hidden></p>
+                <p class="subText"><a href="/signin/">Already have an account? Sign in</a></p>
             </div>
         </div>
     </main>
     <aside id="sideBar">
-        <div id="trends">
-            <p>Trends</p>
-            <div>
-                <a href="/discover/search?q=gay_people">chirp</a>
-                <p class="subText">12 chirps</p>
-            </div>
-            <div>
-                <a>twitter</a>
-                <p class="subText">47 chirps</p>
-            </div>
-            <div>
-                <a>iphone 16</a>
-                <p class="subText">62 chirps</p>
-            </div>
-        </div>
-        <div id="whotfollow">
-            <p>Suggested accounts</p>
-            <div>
-                <div>
-                    <img class="userPic"
-                        src="https://pbs.twimg.com/profile_images/1797665112440045568/305XgPDq_400x400.png" alt="Apple">
-                    <div>
-                        <p>Apple <img class="verified" src="/src/images/icons/verified.svg" alt="Verified"></p>
-                        <p class="subText">@apple</p>
-                    </div>
-                </div>
-                <a class="followButton following">Following</a>
-            </div>
-            <div>
-                <div>
-                    <img class="userPic"
-                        src="https://pbs.twimg.com/profile_images/1881368435453542400/NnD56DYV_400x400.jpg"
-                        alt="President Trump">
-                    <div>
-                        <p>President Trump <img class="verified" src="/src/images/icons/verified.svg" alt="Verified">
-                        </p>
-                        <p class="subText">@POTUS</p>
-                    </div>
-                </div>
-                <a class="followButton">Follow</a>
-            </div>
-        </div>
-        <div>
-            <p class="subText">Inspired by Twitter/X. No code has been sourced from Twitter/X. Twemoji by Twitter Inc/X
-                Corp is licensed under CC-BY 4.0.
 
-                <br><br>You're running: Chirp Beta 0.7b 
-            </p>
-        </div>
+
+        <div class="peepCredit">
+    <p class="subText"><?php echo htmlspecialchars(PEEP_NAME); ?> is a fork of Chirp by <a class="subText" href="https://aridan.net" rel="noopener noreferrer">Adnan Bukvic</a> and the Chirp contributors, MIT license.</p>
+    <p class="subText"><a class="subText" href="<?php echo PEEP_SOURCE_URL; ?>" rel="noopener noreferrer">Source code on GitHub</a>. Co-written with Tab.</p>
+</div>
     </aside>
     <footer>
         <div class="mobileMenuFooter">
@@ -201,59 +134,56 @@ session_start();
     <script>
     function showNextSection(nextSectionId) {
         const sections = ['inviteCode', 'nameUser', 'pwordUser'];
-
-        // Hide all sections first
-        sections.forEach(sectionId => {
-            document.getElementById(sectionId).style.display = 'none';
-        });
-
-        // Display the next section based on nextSectionId
-        if (nextSectionId) {
-            document.getElementById(nextSectionId).style.display = 'block';
+        const current = sections.find(id => document.getElementById(id).style.display !== 'none' && getComputedStyle(document.getElementById(id)).display !== 'none');
+        if (current) {
+            const empty = Array.from(document.getElementById(current).querySelectorAll('input[required]')).find(i => !i.value.trim());
+            if (empty) { showSignupError('Please fill in ' + document.querySelector('label[for="' + empty.id + '"]').textContent + '.'); empty.focus(); return; }
         }
+        document.getElementById('signupError').hidden = true;
+        sections.forEach(id => { document.getElementById(id).style.display = (id === nextSectionId) ? 'block' : 'none'; });
+        const first = document.getElementById(nextSectionId).querySelector('input');
+        if (first) first.focus();
     }
-    document.getElementById('signupForm').addEventListener('submit', function(event) {
+    function showSignupError(msg) {
+        const el = document.getElementById('signupError');
+        el.textContent = msg; el.hidden = false;
+    }
+    const signupMessages = {
+        'Invalid invite code': 'That invite code does not work. Check it, or ask for a new one.',
+        'Invite already used': 'That invite code was already used. Ask for a new one.',
+        'Username already in use': 'That username is taken. Pick another one.',
+        'Passwords do not match': 'The two passwords do not match.',
+        'This username is reserved.': 'That username is reserved.',
+        'Invite not reserved for this username': 'That invite code is saved for a different username.'
+    };
+    const goTo = {
+        'Invalid invite code': 'inviteCode', 'Invite already used': 'inviteCode', 'Invite not reserved for this username': 'inviteCode',
+        'Username already in use': 'nameUser', 'This username is reserved.': 'nameUser', 'Passwords do not match': 'pwordUser'
+    };
+    document.getElementById('signupForm').addEventListener('submit', function (event) {
         event.preventDefault();
         const form = this;
-        const formData = new FormData(form);
-
-        fetch(form.action, {
-                method: 'POST',
-                body: formData
-            })
+        fetch(form.action, { method: 'POST', body: new FormData(form) })
             .then(response => response.json())
             .then(data => {
-                if (data.error) {
-                    // Display error message
-                    document.getElementById('errors').style.display = 'block';
-                    document.getElementById('invalidCodeError').style.display = 'none';
-                    document.getElementById('usernameTakenError').style.display = 'none';
-                    document.getElementById('passwordMismatchError').style.display = 'none';
-                    document.getElementById('invalidUsernameError').style.display = 'none';
-                    document.getElementById('reservedUsernameError').style.display = 'none';
-                    document.getElementById('inviteNotReservedError').style.display = 'none';
-
-                    if (data.error === 'Invalid invite code') {
-                        document.getElementById('invalidCodeError').style.display = 'block';
-                    } else if (data.error === 'Username already in use') {
-                        document.getElementById('usernameTakenError').style.display = 'block';
-                    } else if (data.error === 'Passwords do not match') {
-                        document.getElementById('passwordMismatchError').style.display = 'block';
-                    } else if (data.error === 'Invalid username. Only letters and numbers are allowed.') {
-                        document.getElementById('invalidUsernameError').style.display = 'block';
-                    } else if (data.error === 'This username is reserved.') {
-                        document.getElementById('reservedUsernameError').style.display = 'block';
-                    } else if (data.error === 'Invite not reserved for this username') {
-                        document.getElementById('inviteNotReservedError').style.display = 'block';
-                    }
-                } else if (data.success) {
-                    // Handle success scenario, maybe redirect to a success page
-                    window.location.href = '/signin/'; // Example redirect
+                if (data.success) {
+                    peepAnnounce('Account created. Taking you to sign in.');
+                    setTimeout(() => { window.location.href = '/signin/'; }, 900);
+                    return;
                 }
+                const err = data.error || 'Something went wrong.';
+                if (goTo[err]) {
+                    ['inviteCode', 'nameUser', 'pwordUser'].forEach(id => { document.getElementById(id).style.display = (id === goTo[err]) ? 'block' : 'none'; });
+                }
+                showSignupError(signupMessages[err] || (err.indexOf('Invalid username') === 0 ? 'Usernames can only use letters, numbers and _.' : err));
+                const box = document.getElementById(goTo[err] || 'pwordUser');
+                const field = box && box.querySelector('input'); if (field) field.focus();
             })
-            .catch(error => console.error('Error:', error));
+            .catch(() => showSignupError('Could not reach the server. Try again.'));
     });
     </script>
+<div id="peepStatus" class="srOnly" role="status" aria-live="polite" data-flash="<?php echo peep_take_flash(); ?>"></div>
+    <script src="/src/scripts/peep.js?v=<?php echo PEEP_ASSET_VERSION; ?>"></script>
 </body>
 
 </html>

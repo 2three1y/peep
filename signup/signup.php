@@ -1,6 +1,7 @@
 <?php
+require_once __DIR__ . '/../include/config.php';
 try {
-    $db = new PDO('sqlite:' . __DIR__ . '/../../chirp.db');
+    $db = peep_db();
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -32,6 +33,14 @@ try {
             exit;
         }
 
+        // peep: one invite = one account
+        $stmt = $db->prepare("SELECT COUNT(*) FROM users WHERE UPPER(usedInvite) = :code");
+        $stmt->execute(['code' => $code]);
+        if ((int)$stmt->fetchColumn() > 0) {
+            echo json_encode(['error' => 'Invite already used']);
+            exit;
+        }
+
         // Check if the invite is reserved for a specific username
         if ($invite['reservedFor'] !== null && strtolower($invite['reservedFor']) !== strtolower($username)) {
             echo json_encode(['error' => 'Invite not reserved for this username']);
@@ -58,6 +67,11 @@ try {
             exit;
         }
 
+        if (trim($name) === '' || trim($email) === '' || $password === '') {
+            echo json_encode(['error' => 'Please fill in every field.']);
+            exit;
+        }
+
         // Validate password match
         if ($password !== $passwordConfirm) {
             echo json_encode(['error' => 'Passwords do not match']);
@@ -74,7 +88,8 @@ try {
         echo json_encode(['success' => true]);
     }
 } catch (PDOException $e) {
-    echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+    error_log($e->getMessage());
+    echo json_encode(['error' => 'Something went wrong on the server.']);
     exit;
 }
 ?>

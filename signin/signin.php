@@ -1,10 +1,11 @@
 <?php
+require_once __DIR__ . '/../include/config.php';
 // Set session cookie parameters
 session_set_cookie_params([
     'lifetime' => 3456000, // 40 days in seconds
     'path' => '/', // Will use the same path
     'domain' => '', // Will use the same domain
-    'secure' => true, 
+    'secure' => peep_is_https(), // peep: secure whenever the site is on https (Chirp always set it, which broke plain-http testing) 
     'httponly' => true, // Protects against XSS attacks
     'samesite' => 'Lax'
 ]);
@@ -18,7 +19,7 @@ header('X-XSS-Protection: 1; mode=block');
 
 // Function to connect to the database
 function getDatabaseConnection() {
-    $db = new PDO('sqlite:' . __DIR__ . '/../../chirp.db');
+    $db = peep_db();
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     return $db;
 }
@@ -80,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'expires' => time() + 604800, 
                 'path' => '/', 
                 'domain' => '', 
-                'secure' => true, 
+                'secure' => peep_is_https(), // peep: secure whenever the site is on https (Chirp always set it, which broke plain-http testing) 
                 'httponly' => true, 
                 'samesite' => 'Lax'
             ]);
