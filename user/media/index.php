@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../include/config.php';
 session_start();
 
 // Check if 'id' parameter is provided in the URL
@@ -9,7 +10,7 @@ if (!$id) {
 } else {
     $invalidId = false;
     try {
-        $db = new PDO('sqlite:' . __DIR__ . '/../../../chirp.db');
+        $db = peep_db();
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // Enable error handling
     } catch (PDOException $e) {
         echo "Database connection failed: " . $e->getMessage();
@@ -69,7 +70,7 @@ if (!$id) {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
 
 <head>
     <meta charset="UTF-8">
@@ -77,16 +78,11 @@ if (!$id) {
     <meta name="mobile-web-app-capable" content="yes">
 
 
-    <link href="/src/styles/styles.css" rel="stylesheet">
-    <link href="/src/styles/timeline.css" rel="stylesheet">
-    <link href="/src/styles/menus.css" rel="stylesheet">
-    <link href="/src/styles/responsive.css" rel="stylesheet">
-    <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js"
-        crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-        integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="/src/scripts/general.js"></script>
+    <link href="/src/styles/styles.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+    <link href="/src/styles/timeline.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+    <link href="/src/styles/menus.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+    <link href="/src/styles/responsive.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+    <script src="/src/scripts/general.js?v=<?php echo PEEP_ASSET_VERSION; ?>"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -99,7 +95,7 @@ if (!$id) {
     <header>
         <div id="desktopMenu">
             <nav>
-                <img src="/src/images/icons/chirp.svg" alt="Chirp" onclick="playChirpSound()">
+                <button type="button" class="logoButton" onclick="playChirpSound()" aria-label="Play the peep sound"><img src="/src/images/icons/chirp.svg" alt=""></button>
                 <a href="/"><img src="/src/images/icons/house.svg" alt=""> Home</a>
                 <a href="/discover"><img src="/src/images/icons/search.svg" alt=""> Discover</a>
                 <?php if (isset($_SESSION['username'])): ?>
@@ -113,7 +109,7 @@ if (!$id) {
                 <?php endif; ?>
             </nav>
             <div id="menuSettings">
-                <?php if (isset($_SESSION['username']) && $_SESSION['username'] == 'chirp'): ?>
+                <?php if (peep_is_admin()): ?>
                     <a href="/admin">🛡️ Admin panel</a>
                 <?php endif; ?>
                 <a href="/settings/account">⚙️ Settings</a>
@@ -143,12 +139,11 @@ if (!$id) {
         </div>
     </header>
     <main>
+        <h1 class="srOnly"><?php echo preg_replace('/\s*-\s*Chirp$/', '', $pageTitle); ?></h1>
         <div id="feed">
             <div id="timelineSelect">
-                <div id="iconChirp" onclick="playChirpSound()">
-                    <img src="/src/images/icons/chirp.svg" alt="Chirp">
-                </div>
-                <button id="back" class="selcted" onclick="back()"><i class="fa-solid fa-arrow-left"></i> Back </button>
+                <button type="button" id="iconChirp" onclick="playChirpSound()" aria-label="Play the peep sound"><img src="/src/images/icons/chirp.svg" alt=""></button>
+                <button id="back" class="selcted" onclick="back()"><svg class="peepIcon" aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="1em" height="1em"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back </button>
             </div>
             <?php if ($userNotFound): ?>
                 <!-- If post is not found or no ID provided, show this -->
@@ -185,12 +180,12 @@ if (!$id) {
                                 <?php if ($isUserProfile): ?>
                                     <a id="editProfileButton" class="followButton" href="/user/edit">Edit profile</a>
                                 <?php else: ?>
-                                    <button id="followProfileButton" class="followButton"
+                                    <button type="button" id="followProfileButton" class="followButton" aria-pressed="false"
                                         onclick="toggleFollow(<?php echo $user['id']; ?>)"
                                         style="<?php echo $isFollowing ? 'display:none;' : ''; ?>">Follow</button>
-                                    <button id="followingProfileButton" class="followButton following"
+                                    <button type="button" id="followingProfileButton" class="followButton following"
                                         onclick="toggleFollow(<?php echo $user['id']; ?>)"
-                                        style="<?php echo $isFollowing ? '' : 'display:none;'; ?>">Following</button>
+                                        style="<?php echo $isFollowing ? '' : 'display:none;'; ?>" aria-pressed="true">Following</button>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -285,9 +280,11 @@ if (!$id) {
                         if (action === 'follow') {
                             followButton.style.display = 'none'; // Hide Follow button
                             followingButton.style.display = ''; // Show Following button
+                            followingButton.focus(); peepAnnounce('Following');
                         } else if (action === 'unfollow') {
                             followButton.style.display = ''; // Show Follow button
                             followingButton.style.display = 'none'; // Hide Following button
+                            followButton.focus(); peepAnnounce('Unfollowed');
                         }
                     } else if (data.error === 'not_signed_in') {
                         window.location.href = '/signin/';
@@ -309,6 +306,8 @@ if (!$id) {
         ?>
     </script>
 
+<div id="peepStatus" class="srOnly" role="status" aria-live="polite" data-flash="<?php echo peep_take_flash(); ?>"></div>
+    <script src="/src/scripts/peep.js?v=<?php echo PEEP_ASSET_VERSION; ?>"></script>
 </body>
 
 </html>

@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../include/config.php';
 session_start();
 
 // Check if 'id' parameter is provided in the URL
@@ -9,7 +10,7 @@ if (!$id) {
 } else {
     $invalidId = false;
     try {
-        $db = new PDO('sqlite:' . __DIR__ . '/../../../chirp.db');
+        $db = peep_db();
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // Enable error handling
     } catch(PDOException $e) {
         echo "Database connection failed: " . $e->getMessage();
@@ -58,7 +59,7 @@ if (!$id) {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
 
 <head>
     <meta charset="UTF-8">
@@ -66,13 +67,11 @@ if (!$id) {
     <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0000">
-    <link href="/src/styles/styles.css" rel="stylesheet">
-    <link href="/src/styles/timeline.css" rel="stylesheet">
-    <link href="/src/styles/menus.css" rel="stylesheet">
-    <link href="/src/styles/responsive.css" rel="stylesheet">
-    <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="/src/scripts/general.js"></script>
+    <link href="/src/styles/styles.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+    <link href="/src/styles/timeline.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+    <link href="/src/styles/menus.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+    <link href="/src/styles/responsive.css?v=<?php echo PEEP_ASSET_VERSION; ?>" rel="stylesheet">
+    <script src="/src/scripts/general.js?v=<?php echo PEEP_ASSET_VERSION; ?>"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -85,7 +84,7 @@ if (!$id) {
     <header>
         <div id="desktopMenu">
             <nav>
-                <img src="/src/images/icons/chirp.svg" alt="Chirp" onclick="playChirpSound()">
+                <button type="button" class="logoButton" onclick="playChirpSound()" aria-label="Play the peep sound"><img src="/src/images/icons/chirp.svg" alt=""></button>
                 <a href="/"><img src="/src/images/icons/house.svg" alt=""> Home</a>
                 <a href="/discover"><img src="/src/images/icons/search.svg" alt=""> Discover</a>
                 <?php if (isset($_SESSION['username'])): ?>
@@ -99,7 +98,7 @@ if (!$id) {
                 <?php endif; ?>
             </nav>
             <div id="menuSettings">
-                <?php if (isset($_SESSION['username']) && $_SESSION['username'] == 'chirp'): ?>
+                <?php if (peep_is_admin()): ?>
                 <a href="/admin">🛡️ Admin panel</a>
                 <?php endif; ?>
                 <a href="/settings/account">⚙️ Settings</a>
@@ -129,12 +128,11 @@ if (!$id) {
         </div>
     </header>
     <main>
+        <h1 class="srOnly"><?php echo preg_replace('/\s*-\s*Chirp$/', '', $pageTitle); ?></h1>
         <div id="feed">
             <div id="timelineSelect">
-            <div id="iconChirp" onclick="playChirpSound()">
-                <img src="/src/images/icons/chirp.svg" alt="Chirp">
-            </div>
-                <button id="back" class="selcted" onclick="back()"><i class="fa-solid fa-arrow-left"></i> Back </button>
+            <button type="button" id="iconChirp" onclick="playChirpSound()" aria-label="Play the peep sound"><img src="/src/images/icons/chirp.svg" alt=""></button>
+                <button id="back" class="selcted" onclick="back()"><svg class="peepIcon" aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="1em" height="1em"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back </button>
             </div>
             <?php if ($userNotFound): ?>
             <!-- If post is not found or no ID provided, show this -->
@@ -268,105 +266,8 @@ if (!$id) {
                 chirps.forEach(chirp => {
                     
 
-                    // Create chirp div
-                    const chirpDiv = document.createElement('div');
-                    chirpDiv.className = 'chirp';
-                    chirpDiv.id = chirp.id;
-
-                    // Create chirpClicker link
-                    const chirpClicker = document.createElement('a');
-                    chirpClicker.className = 'chirpClicker';
-                    chirpClicker.href = `/chirp?id=${chirp.id}`;
-
-                    // Create chirpInfo div
-                    const chirpInfo = document.createElement('div');
-                    chirpInfo.className = 'chirpInfo';
-
-                    // User picture
-                    const userPic = document.createElement('img');
-                    userPic.className = 'userPic';
-                    userPic.src = chirp.profilePic ? chirp.profilePic : '/src/images/users/guest/user.svg';
-                    userPic.alt = chirp.name ? chirp.name : 'Guest';
-
-                    // User details
-                    const userDetails = document.createElement('div');
-                    const userName = document.createElement('p');
-                    userName.innerHTML = `
-                        ${chirp.name ? chirp.name : 'Guest'} 
-                        ${chirp.isVerified ? '<img class="verified" src="/src/images/icons/verified.svg" alt="Verified">' : ''}
-                    `;
-                    const userUsername = document.createElement('p');
-                    userUsername.className = 'subText';
-                    userUsername.innerText = `@${chirp.username ? chirp.username : 'guest'}`;
-
-                    userDetails.appendChild(userName);
-                    userDetails.appendChild(userUsername);
-
-                    // Add user picture and details to chirpInfo
-                    const userWrapper = document.createElement('div');
-                    userWrapper.appendChild(userPic);
-                    userWrapper.appendChild(userDetails);
-                    chirpInfo.appendChild(userWrapper);
-
-                    // Timestamp
-                    const timestampDiv = document.createElement('div');
-                    timestampDiv.className = 'timestampTimeline';
-                    const postedDate = document.createElement('p');
-                    postedDate.className = 'subText postedDate';
-                    postedDate.setAttribute('data-timestamp', chirp.timestamp);
-                    timestampDiv.appendChild(postedDate);
-                    chirpInfo.appendChild(timestampDiv);
-
-                    // Preformatted chirp text
-                    const chirpText = document.createElement('pre');
-                    chirpText.innerHTML = chirp.chirp;
-
-                    // Add chirpInfo and text to chirpClicker
-                    chirpClicker.appendChild(chirpInfo);
-                    chirpClicker.appendChild(chirpText);
-
-                    // Create chirpInteract div
-                    const chirpInteract = document.createElement('div');
-                    chirpInteract.className = 'chirpInteract';
-
-                    // Reply button
-                    const replyButton = document.createElement('button');
-                    replyButton.type = 'button';
-                    replyButton.className = 'reply';
-                    replyButton.onclick = () => location.href = `/chirp/?id=${chirp.id}`;
-                    replyButton.innerHTML = `<img alt="Reply" src="/src/images/icons/reply.svg"> <span class="reply-count">${chirp.reply_count}</span>`;
-                    
-                    // Rechirp button
-                    const rechirpButton = document.createElement('button');
-                    rechirpButton.type = 'button';
-                    rechirpButton.className = 'rechirp';
-                    rechirpButton.onclick = () => updateChirpInteraction(chirp.id, 'rechirp', rechirpButton);
-                    rechirpButton.innerHTML = `<img alt="Rechirp" src="/src/images/icons/${chirp.rechirped_by_current_user ? 'rechirped' : 'rechirp'}.svg"> <span class="rechirp-count">${chirp.rechirp_count}</span>`;
-                    
-                    // Like button
-                    const likeButton = document.createElement('button');
-                    likeButton.type = 'button';
-                    likeButton.className = 'like';
-                    likeButton.onclick = () => updateChirpInteraction(chirp.id, 'like', likeButton);
-                    likeButton.innerHTML = `<img alt="Like" src="/src/images/icons/${chirp.liked_by_current_user ? 'liked' : 'like'}.svg"> <span class="like-count">${chirp.like_count}</span>`;
-                    
-                    // interactLinker
-                    const interactLinker = document.createElement('a');
-                    interactLinker.className = 'interactLinkerPost';
-                    interactLinker.href = `/chirp?id=${chirp.id}`;
-
-                    // Append buttons to chirpInteract
-                    chirpInteract.appendChild(replyButton);
-                    chirpInteract.appendChild(rechirpButton);
-                    chirpInteract.appendChild(likeButton);
-                    chirpInteract.appendChild(interactLinker);
-
-                    // Append chirpClicker and interact div to chirpDiv
-                    chirpDiv.appendChild(chirpClicker);
-                    chirpDiv.appendChild(chirpInteract);
-
-                    // Finally append chirpDiv to the container
-                    chirpsContainer.appendChild(chirpDiv);
+                    // peep: one accessible <article> per post (src/scripts/peep.js)
+                    chirpsContainer.appendChild(peepRenderPost(chirp, 2));
                     
                 });
 
@@ -400,7 +301,7 @@ if (!$id) {
     });
 
 
-    function updateChirpInteraction(chirpId, action, button) {
+    function legacyUpdateChirpInteraction(chirpId, action, button) {
         fetch(`/interact_chirp.php`, {
                 method: 'POST',
                 headers: {
@@ -497,6 +398,8 @@ if (isset($_SESSION['error_message'])) {
 ?>
     </script>
 
+<div id="peepStatus" class="srOnly" role="status" aria-live="polite" data-flash="<?php echo peep_take_flash(); ?>"></div>
+    <script src="/src/scripts/peep.js?v=<?php echo PEEP_ASSET_VERSION; ?>"></script>
 </body>
 
 </html>

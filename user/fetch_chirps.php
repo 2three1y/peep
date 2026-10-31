@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../include/config.php';
 session_start();
 
 // Function to check if the image is available with a timeout
@@ -71,7 +72,7 @@ function makeLinksClickable($text) {
 
 try {
     // Set up PDO with error mode to exception
-    $db = new PDO('sqlite:' . __DIR__ . '/../../chirp.db');
+    $db = peep_db();
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Validate and sanitize inputs
