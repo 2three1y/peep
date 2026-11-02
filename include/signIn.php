@@ -13,8 +13,8 @@
                     <h1>Sign in to Chirp</h1>
                     <p class="subText">You've left the nest! Let's get you signed in again!</p>
                     <div id="signInCredentials">
-                        <input type="text" id="username" name="username" placeholder="Username" required>
-                        <input type="password" id="pWord" name="pWord" placeholder="Password" required>
+                        <input type="text" id="username" name="username" placeholder="Username">
+                        <input type="password" id="pWord" name="pWord" placeholder="Password">
                     </div>
                     <div>
                         <p class="err">❌ Wrong username or password.</p>

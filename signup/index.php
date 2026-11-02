@@ -84,25 +84,25 @@ session_start();
                     <fieldset id="inviteCode">
                         <legend>Step 1 of 3: Invite code</legend>
                         <label for="code">Invite code</label>
-                        <input type="text" id="code" name="code" autocomplete="off" autocapitalize="characters" spellcheck="false" required>
+                        <input type="text" id="code" name="code" autocomplete="off" autocapitalize="characters" spellcheck="false">
                         <button type="button" class="followButton" onclick="showNextSection('nameUser')">Next</button>
                     </fieldset>
                     <fieldset id="nameUser">
                         <legend>Step 2 of 3: About you</legend>
                         <label for="name">Display name</label>
-                        <input type="text" id="name" name="name" autocomplete="nickname" required>
+                        <input type="text" id="name" name="name" autocomplete="nickname">
                         <label for="username">Username (letters, numbers and _ only)</label>
-                        <input type="text" id="username" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" pattern="[A-Za-z0-9_]+" required>
+                        <input type="text" id="username" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" pattern="[A-Za-z0-9_]+">
                         <label for="email">Email</label>
-                        <input type="email" id="email" name="email" autocomplete="email" required>
+                        <input type="email" id="email" name="email" autocomplete="email">
                         <button type="button" class="followButton" onclick="showNextSection('pwordUser')">Next</button>
                     </fieldset>
                     <fieldset id="pwordUser">
                         <legend>Step 3 of 3: Password</legend>
                         <label for="pword">Password</label>
-                        <input type="password" id="pword" name="pword" autocomplete="new-password" required>
+                        <input type="password" id="pword" name="pword" autocomplete="new-password">
                         <label for="pwordConfirm">Password again</label>
-                        <input type="password" id="pwordConfirm" name="pwordConfirm" autocomplete="new-password" required>
+                        <input type="password" id="pwordConfirm" name="pwordConfirm" autocomplete="new-password">
                         <button type="submit" class="followButton">Create account</button>
                     </fieldset>
                 </form>

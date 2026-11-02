@@ -260,7 +260,7 @@ $invites = $db->query('SELECT i.invite, u.username FROM invites i LEFT JOIN user
                     <input type="hidden" name="csrf" value="<?php echo $csrf; ?>">
                     <input type="hidden" name="action" value="reset_password">
                     <label for="resetUsername">Username</label>
-                    <input type="text" id="resetUsername" name="resetUsername" autocomplete="off" autocapitalize="none" required>
+                    <input type="text" id="resetUsername" name="resetUsername" autocomplete="off" autocapitalize="none">
                     <button type="submit" class="followButton">Reset password</button>
                 </form>
             </section>
@@ -272,9 +272,9 @@ $invites = $db->query('SELECT i.invite, u.username FROM invites i LEFT JOIN user
                     <input type="hidden" name="csrf" value="<?php echo $csrf; ?>">
                     <input type="hidden" name="action" value="delete_user">
                     <label for="deleteUsername">Username</label>
-                    <input type="text" id="deleteUsername" name="deleteUsername" autocomplete="off" autocapitalize="none" required>
+                    <input type="text" id="deleteUsername" name="deleteUsername" autocomplete="off" autocapitalize="none">
                     <label for="confirmDelete">Type the username again to confirm</label>
-                    <input type="text" id="confirmDelete" name="confirmDelete" autocomplete="off" autocapitalize="none" required>
+                    <input type="text" id="confirmDelete" name="confirmDelete" autocomplete="off" autocapitalize="none">
                     <button type="submit" class="followButton">Delete account</button>
                 </form>
             </section>
@@ -295,9 +295,9 @@ $invites = $db->query('SELECT i.invite, u.username FROM invites i LEFT JOIN user
                     <input type="hidden" name="csrf" value="<?php echo $csrf; ?>">
                     <input type="hidden" name="action" value="migrate_user">
                     <label for="migrateFrom">Current username</label>
-                    <input type="text" id="migrateFrom" name="migrateFrom" autocomplete="off" autocapitalize="none" required>
+                    <input type="text" id="migrateFrom" name="migrateFrom" autocomplete="off" autocapitalize="none">
                     <label for="migrateTo">New username</label>
-                    <input type="text" id="migrateTo" name="migrateTo" autocomplete="off" autocapitalize="none" required>
+                    <input type="text" id="migrateTo" name="migrateTo" autocomplete="off" autocapitalize="none">
                     <button type="submit" class="followButton">Change username</button>
                 </form>
             </section>

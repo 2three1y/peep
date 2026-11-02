@@ -82,9 +82,9 @@ session_start();
                 <p>You're browsing as a guest. Sign in to post, like and follow.</p>
                 <form id="signInForm" class="peepForm" method="post" action="/signin/signin.php">
                     <label for="username">Username</label>
-                    <input type="text" id="username" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+                    <input type="text" id="username" name="username" autocomplete="username" autocapitalize="none" spellcheck="false">
                     <label for="pWord">Password</label>
-                    <input type="password" id="pWord" name="pWord" autocomplete="current-password" required>
+                    <input type="password" id="pWord" name="pWord" autocomplete="current-password">
                     <p id="signInError" class="peepError" role="alert" hidden></p>
                     <button type="submit" class="followButton">Sign in</button>
                 </form>

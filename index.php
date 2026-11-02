@@ -151,7 +151,7 @@ try {
     <div id="signInModal" class="modal" style="display: none;">
         <div class="modal-content signIn">
             <h2>Sign in to Chirp</h2>
-            <input type="text" id="username" placeholder="Email or username" required>
+            <input type="text" id="username" placeholder="Email or username">
             <div class="modal-buttons">
                 <button class="button followButton" id="okButton" onClick="closeWannaTalkAboutItModal()">Next</button>
                 <a href="/signin/forgot/password/"

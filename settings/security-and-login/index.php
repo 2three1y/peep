@@ -113,11 +113,11 @@ session_start();
                         <?php if (isset($_SESSION['username'])): ?>
                         <form id="changePasswordForm" class="peepForm" method="post" action="/settings/security-and-login/changePassword.php">
                             <label for="currentPassword">Current password</label>
-                            <input type="password" id="currentPassword" name="currentPassword" autocomplete="current-password" required>
+                            <input type="password" id="currentPassword" name="currentPassword" autocomplete="current-password">
                             <label for="newPassword">New password (at least 8 characters)</label>
-                            <input type="password" id="newPassword" name="newPassword" autocomplete="new-password" minlength="8" required>
+                            <input type="password" id="newPassword" name="newPassword" autocomplete="new-password" minlength="8">
                             <label for="confirmPassword">New password again</label>
-                            <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" minlength="8" required>
+                            <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" minlength="8">
                             <button type="submit" class="followButton">Change password</button>
                         </form>
                         <p class="subText">Forgot your password? Ask an admin to reset it for you.</p>
